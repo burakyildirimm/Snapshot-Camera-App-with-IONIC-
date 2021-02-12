@@ -42,7 +42,7 @@ export class HomePage {
     const result = await CameraPreview.capture(cameraPreviewPictureOptions);
     
     this.image = `data:image/jpeg;base64,${result.value}`;
-    console.log("Base64 ümüz: ",this.image);
+    console.log("Base 64 ümüz: ",this.image);
     
     // Write the file to the data directory
     const fileName = new Date().getTime() + '.jpeg';
