@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FilesystemDirectory, Plugins } from "@capacitor/core"
+import { CameraPhoto, FilesystemDirectory, Plugins } from "@capacitor/core"
 const { CameraPreview, Filesystem } = Plugins;
 import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
 
@@ -12,8 +12,9 @@ import '@capacitor-community/camera-preview'
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  image = null;
+  public image = null;
   cameraActive = false;
+  public photos: Photo[] = [];
 
 
   constructor() {}
@@ -40,23 +41,38 @@ export class HomePage {
     };
     
     const result = await CameraPreview.capture(cameraPreviewPictureOptions);
-    
     this.image = `data:image/jpeg;base64,${result.value}`;
-    console.log("Base 64 ümüz: ",this.image);
+    this.savePicture(result, this.image);
     
+    this.stopCamera();
+  }
+
+  async savePicture(cameraPhoto: CameraPhoto, base64: string) {
+
     // Write the file to the data directory
-    const fileName = new Date().getTime() + '.jpeg';
+    const fileName = 'yildirim' + new Date().getTime() + '.jpeg';
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: this.image,
-      directory: FilesystemDirectory.Data
+      directory: FilesystemDirectory.Documents
     });
 
-    this.stopCamera();
+    const savedImageFile = {
+      filepath: fileName,
+      // webviewPath: cameraPhoto.webPath
+    };
+
+    this.photos.unshift(savedImageFile);
   }
 
   flipCamera() {
     CameraPreview.flip();
   }
 
+}
+
+
+export interface Photo {
+  filepath: string;
+  // webviewPath: string;
 }
