@@ -1,0 +1,92 @@
+ion-content {
+  --background: transparent!important;
+}
+
+.overlay {
+  position: absoulte;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.cameraPreview {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.image-overlay {
+  z-index: 1;
+  position: absolute;
+  left: 25%;
+  top: 25%;
+  width: 50%;
+}
+
+#capture {
+  position: absolute;
+  bottom: 50px;
+  left: calc(50% - 25px);
+  width: 50px;
+  height: 50px;
+  z-index: 11;
+}
+
+#close {
+  position: absolute;
+  bottom: 50px;
+  left: calc(50% - 175px);
+  width: 50px;
+  height: 50px;
+  z-index: 11;
+}
+
+#flip {
+  position: absolute;
+  bottom: 50px;
+  left: calc(50% + 125px);
+  width: 50px;
+  height: 50px;
+  z-index: 11;
+}
+
+#close::part(native) {
+  border-radius: 30px;
+}
+
+#capture::part(native) {
+  border-radius: 30px;
+}
+
+#flip::part(native) {
+  border-radius: 30px;
+}
+
+#container {
+  text-align: center;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+
+  color: #8c8c8c;
+
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}
