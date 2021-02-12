@@ -32,14 +32,12 @@ export class HomePage {
 
   async captureCamera() {
     const cameraPreviewPictureOptions: CameraPreviewPictureOptions = {
-      quality: 90
+      quality: 100
     };
     
     const result = await CameraPreview.capture(cameraPreviewPictureOptions);
     this.image = `data:image/jpeg;base64,${result.value}`;
     this.savePicture(result, this.image);
-    
-    this.stopCamera();
   }
 
   async savePicture(cameraPhoto: CameraPhoto, base64: string) {
@@ -75,7 +73,7 @@ export class HomePage {
         directory: FilesystemDirectory.Documents,
       });
     } catch(e) {
-      console.error('Unable to make directory', e);
+      console.log('This directory already exist.');
     }
   }
 
