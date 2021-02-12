@@ -27,7 +27,9 @@ export class HomePage {
       paddingBottom: 50,
     };
     CameraPreview.start(cameraPreviewOptions);
-    this.cameraActive = true;    
+    this.cameraActive = true;
+    
+    // setInterval( ()=>{this.captureCamera()},500 );
   }
 
   async captureCamera() {
@@ -51,6 +53,7 @@ export class HomePage {
         path: 'EasyScanner/' + fileName,
         data: this.image,
         directory: FilesystemDirectory.Documents,
+        // recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
       })
       console.log('Wrote file', savedFile);
     } catch(e) {
