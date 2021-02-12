@@ -30,11 +30,6 @@ export class HomePage {
     this.cameraActive = true;    
   }
 
-  async stopCamera() {
-    await CameraPreview.stop();
-    this.cameraActive = false;
-  }
-
   async captureCamera() {
     const cameraPreviewPictureOptions: CameraPreviewPictureOptions = {
       quality: 90
@@ -48,14 +43,21 @@ export class HomePage {
   }
 
   async savePicture(cameraPhoto: CameraPhoto, base64: string) {
+    await this.mkdir();
+
 
     // Write the file to the data directory
-    const fileName = 'yildirim' + new Date().getTime() + '.jpeg';
-    const savedFile = await Filesystem.writeFile({
-      path: fileName,
-      data: this.image,
-      directory: FilesystemDirectory.Documents
-    });
+    const fileName = new Date().getTime() + '.jpeg';
+    try {
+      const savedFile = await Filesystem.writeFile({
+        path: 'EasyScanner/' + fileName,
+        data: this.image,
+        directory: FilesystemDirectory.Documents,
+      })
+      console.log('Wrote file', savedFile);
+    } catch(e) {
+      console.error('Unable to write file', e);
+    }
 
     const savedImageFile = {
       filepath: fileName,
@@ -65,8 +67,25 @@ export class HomePage {
     this.photos.unshift(savedImageFile);
   }
 
+  async mkdir() {
+    try {
+      let ret = await Filesystem.mkdir({
+        path: 'EasyScanner',
+        recursive: false, // like mkdir -p
+        directory: FilesystemDirectory.Documents,
+      });
+    } catch(e) {
+      console.error('Unable to make directory', e);
+    }
+  }
+
   flipCamera() {
     CameraPreview.flip();
+  }
+
+  async stopCamera() {
+    await CameraPreview.stop();
+    this.cameraActive = false;
   }
 
 }
