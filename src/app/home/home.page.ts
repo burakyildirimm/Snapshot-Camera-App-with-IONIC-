@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CameraPhoto, FilesystemDirectory, Plugins } from "@capacitor/core"
-const { CameraPreview, Filesystem } = Plugins;
+const { CameraPreview, Filesystem, Storage } = Plugins;
 import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
 
 // Needed for web registration!
@@ -15,9 +15,32 @@ export class HomePage {
   public image = null;
   cameraActive = false;
   public photos: Photo[] = [];
+  private PHOTO_STORAGE: string = "allphotos";
 
+  constructor() { }
 
-  constructor() {}
+  async ngOnInit() {
+    await this.loadSaved();
+  }
+
+  async loadSaved() {
+    // Retrieve cached photo array data
+    const photoList = await Storage.get({ key: this.PHOTO_STORAGE });
+    this.photos = JSON.parse(photoList.value) || [];
+    
+    // Display the photo by reading into base64 format
+    for (let photo of this.photos) {
+      // Read each saved photo's data from the Filesystem
+      const readFile = await Filesystem.readFile({
+          path: photo.filepath,
+          directory: FilesystemDirectory.Documents
+      });
+
+      // Web platform only: Load the photo as base64 data
+      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+      
+    }
+  }
 
   openCamera() {
     const cameraPreviewOptions: CameraPreviewOptions = {
@@ -51,21 +74,27 @@ export class HomePage {
     try {
       const savedFile = await Filesystem.writeFile({
         path: 'EasyScanner/' + fileName,
-        data: this.image,
+        data: base64,
         directory: FilesystemDirectory.Documents,
         // recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
       })
+
+      const savedImageFile = {
+        filepath: fileName,
+        webviewPath: base64
+      };
+  
+      this.photos.unshift(savedImageFile);
+  
+      Storage.set({
+        key: this.PHOTO_STORAGE,
+        value: JSON.stringify(this.photos)
+      });
+
       console.log('Wrote file', savedFile);
     } catch(e) {
       console.error('Unable to write file', e);
     }
-
-    const savedImageFile = {
-      filepath: fileName,
-      // webviewPath: cameraPhoto.webPath
-    };
-
-    this.photos.unshift(savedImageFile);
   }
 
   async mkdir() {
@@ -94,5 +123,5 @@ export class HomePage {
 
 export interface Photo {
   filepath: string;
-  // webviewPath: string;
+  webviewPath: string;
 }

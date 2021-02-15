@@ -9,7 +9,6 @@
 <ion-content [fullscreen]="true">
 
     <div id="cameraPreview" class="cameraPreview">
-      <img src="../assets/icon/favicon.png" class="image-overlay">
 
       <ion-button (click)="stopCamera()" expand="block" id="close">
         <ion-icon name="close-circle" slot="icon-only"></ion-icon>
@@ -26,7 +25,15 @@
 
     </div>
   
-    <ion-img [src]="image" *ngIf="image && !cameraActive"></ion-img>
     <ion-button (click)="openCamera()" expand="full" *ngIf="!cameraActive">Open Camera</ion-button>
+
+    <ion-grid *ngIf="!cameraActive">
+      <ion-row>
+      <ion-col size="6" 
+        *ngFor="let photo of photos; index as position">
+          <ion-img [src]="photo.webviewPath"></ion-img>
+      </ion-col>
+      </ion-row>
+    </ion-grid>
 
 </ion-content>
