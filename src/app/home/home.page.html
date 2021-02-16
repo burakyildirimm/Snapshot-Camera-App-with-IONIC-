@@ -10,15 +10,15 @@
 
     <div id="cameraPreview" class="cameraPreview">
 
-      <ion-button (click)="stopCamera()" expand="block" id="close">
+      <ion-button (click)="stopCamera()" expand="block" id="close" *ngIf="cameraActive">
         <ion-icon name="close-circle" slot="icon-only"></ion-icon>
       </ion-button>
 
-      <ion-button (click)="captureCamera()" expand="block" id="capture">
+      <ion-button (click)="captureCamera()" expand="block" id="capture" *ngIf="cameraActive">
         <ion-icon name="camera" slot="icon-only"></ion-icon>
       </ion-button>
 
-      <ion-button (click)="flipCamera()" expand="block" id="flip">
+      <ion-button (click)="flipCamera()" expand="block" id="flip" *ngIf="cameraActive">
         <ion-icon name="camera-reverse" slot="icon-only"></ion-icon>
       </ion-button>
 

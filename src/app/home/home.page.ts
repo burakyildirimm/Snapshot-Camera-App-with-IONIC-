@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { CameraPhoto, FilesystemDirectory, Plugins } from "@capacitor/core"
+import { CameraPhoto, Capacitor, FilesystemDirectory, Plugins } from "@capacitor/core"
 const { CameraPreview, Filesystem, Storage } = Plugins;
 import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
+import { Platform } from '@ionic/angular';
 
 // Needed for web registration!
 import '@capacitor-community/camera-preview'
@@ -15,9 +16,15 @@ export class HomePage {
   public image = null;
   cameraActive = false;
   public photos: Photo[] = [];
-  private PHOTO_STORAGE: string = "allphotos";
+  private PHOTO_STORAGE: string = "images";
+  private platform: Platform;
 
-  constructor() { }
+  constructor(platform: Platform) {
+    this.platform = platform;
+    // Storage.remove({ key: "allphotos" });
+    // Storage.remove({ key: "photos" });
+    // Storage.remove({ key: "images" });
+  }
 
   async ngOnInit() {
     await this.loadSaved();
@@ -27,17 +34,20 @@ export class HomePage {
     // Retrieve cached photo array data
     const photoList = await Storage.get({ key: this.PHOTO_STORAGE });
     this.photos = JSON.parse(photoList.value) || [];
-    
-    // Display the photo by reading into base64 format
-    for (let photo of this.photos) {
-      // Read each saved photo's data from the Filesystem
-      const readFile = await Filesystem.readFile({
-          path: photo.filepath,
-          directory: FilesystemDirectory.Documents
-      });
 
-      // Web platform only: Load the photo as base64 data
-      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+    if (!this.platform.is('hybrid')) {
+      // Display the photo by reading into base64 format
+      for (let photo of this.photos) {
+        // Read each saved photo's data from the Filesystem
+        const readFile = await Filesystem.readFile({
+            path: 'EasyScanner/' + photo.filepath,
+            directory: FilesystemDirectory.Documents
+        });
+
+        // Web platform only: Load the photo as base64 data
+        photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+        
+      }
       
     }
   }
@@ -79,19 +89,29 @@ export class HomePage {
         // recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
       })
 
-      const savedImageFile = {
-        filepath: fileName,
-        webviewPath: base64
-      };
+      let savedObject = null;
+      if (this.platform.is('hybrid')) {
+        savedObject = {
+          filepath: fileName,
+          webviewPath: Capacitor.convertFileSrc(savedFile.uri)
+        };
+      } else {
+        savedObject = {
+          filepath: fileName,
+          webviewPath: ""
+        };
+      }
+
+      
   
-      this.photos.unshift(savedImageFile);
+      this.photos.unshift(savedObject);
   
       Storage.set({
         key: this.PHOTO_STORAGE,
         value: JSON.stringify(this.photos)
       });
 
-      console.log('Wrote file', savedFile);
+      console.log('Wrote file', savedFile.uri);
     } catch(e) {
       console.error('Unable to write file', e);
     }
@@ -116,6 +136,7 @@ export class HomePage {
   async stopCamera() {
     await CameraPreview.stop();
     this.cameraActive = false;
+    this.loadSaved();
   }
 
 }
