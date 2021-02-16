@@ -20,12 +20,11 @@ export class HomePage {
   public photos: Photo[] = [];
   private PHOTO_STORAGE: string = "images";
   private platform: Platform;
+  private capture_timer = null;
 
   constructor(platform: Platform) {
     this.platform = platform;
-    // Storage.remove({ key: "allphotos" });
-    // Storage.remove({ key: "photos" });
-    // Storage.remove({ key: "images" });
+    Storage.remove({ key: "images" });
 
     // console.log(cv.getBuildInformation());
   }
@@ -66,7 +65,7 @@ export class HomePage {
     await CameraPreview.start(cameraPreviewOptions);
     this.cameraActive = true;
     
-    setInterval( ()=>{this.captureCamera()},500 );
+    this.capture_timer = setInterval( ()=>{this.captureCamera()},500 );
   }
 
   async captureCamera() {
@@ -138,9 +137,10 @@ export class HomePage {
   }
 
   async stopCamera() {
+    clearInterval(this.capture_timer);
     await CameraPreview.stop();
-    this.cameraActive = false;
     this.loadSaved();
+    this.cameraActive = false;
   }
 
 }
