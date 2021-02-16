@@ -5,7 +5,9 @@ import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-co
 import { Platform } from '@ionic/angular';
 
 // Needed for web registration!
-import '@capacitor-community/camera-preview'
+import '@capacitor-community/camera-preview';
+
+declare var cv: any;
 
 @Component({
   selector: 'app-home',
@@ -24,6 +26,8 @@ export class HomePage {
     // Storage.remove({ key: "allphotos" });
     // Storage.remove({ key: "photos" });
     // Storage.remove({ key: "images" });
+
+    // console.log(cv.getBuildInformation());
   }
 
   async ngOnInit() {
@@ -34,7 +38,7 @@ export class HomePage {
     // Retrieve cached photo array data
     const photoList = await Storage.get({ key: this.PHOTO_STORAGE });
     this.photos = JSON.parse(photoList.value) || [];
-
+    
     if (!this.platform.is('hybrid')) {
       // Display the photo by reading into base64 format
       for (let photo of this.photos) {
@@ -52,17 +56,17 @@ export class HomePage {
     }
   }
 
-  openCamera() {
+  async openCamera() {
     const cameraPreviewOptions: CameraPreviewOptions = {
       position: 'rear',
       parent: "cameraPreview",
       className: "cameraPreview",
       paddingBottom: 50,
     };
-    CameraPreview.start(cameraPreviewOptions);
+    await CameraPreview.start(cameraPreviewOptions);
     this.cameraActive = true;
     
-    // setInterval( ()=>{this.captureCamera()},500 );
+    setInterval( ()=>{this.captureCamera()},500 );
   }
 
   async captureCamera() {
@@ -76,7 +80,7 @@ export class HomePage {
   }
 
   async savePicture(cameraPhoto: CameraPhoto, base64: string) {
-    await this.mkdir();
+    // await this.mkdir();
 
 
     // Write the file to the data directory
@@ -86,7 +90,7 @@ export class HomePage {
         path: 'EasyScanner/' + fileName,
         data: base64,
         directory: FilesystemDirectory.Documents,
-        // recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
+        recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
       })
 
       let savedObject = null;
