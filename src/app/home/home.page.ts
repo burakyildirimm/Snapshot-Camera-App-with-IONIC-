@@ -3,9 +3,8 @@ import { CameraPhoto, Capacitor, FilesystemDirectory, Plugins } from "@capacitor
 const { CameraPreview, Filesystem, Storage } = Plugins;
 import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
 import { Platform } from '@ionic/angular';
-
-// Needed for web registration!
 import '@capacitor-community/camera-preview';
+import { loadImage } from 'canvas';
 
 declare var cv: any;
 
@@ -24,13 +23,12 @@ export class HomePage {
 
   constructor(platform: Platform) {
     this.platform = platform;
-    Storage.remove({ key: "images" });
-
     // console.log(cv.getBuildInformation());
   }
 
   async ngOnInit() {
-    await this.loadSaved();
+    await Storage.remove({ key: "images" });
+    this.loadSaved();
   }
 
   async loadSaved() {
@@ -77,11 +75,21 @@ export class HomePage {
     this.image = `data:image/jpeg;base64,${result.value}`;
     this.savePicture(result, this.image);
 
-    const img_element = document.getElementById('image');
-    const original_image = cv.imread(img_element);
-    cv.cvtColor(original_image,original_image,cv.COLOR_RGB2GRAY);
-    cv.imshow('output', original_image);
-    original_image.delete();
+    // const img_element = document.getElementById('image');
+    // const original_image = cv.imread(img_element);
+    // cv.cvtColor(original_image,original_image,cv.COLOR_RGB2GRAY);
+    // cv.imshow('output', original_image);
+    // original_image.delete();
+    
+
+    // let img = await loadImage("./assets/icon/favicon.png");
+    // let src = cv.imread(img);
+    // let dst = new cv.Mat();
+    // cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+    // cv.imshow('output', dst);
+    // src.delete();
+    // dst.delete();
+
   }
 
   async savePicture(cameraPhoto: CameraPhoto, base64: string) {
@@ -98,6 +106,14 @@ export class HomePage {
         recursive: true,     // Eğer foto çekerken kasma alursa mkdir devre dışı bırakılıp burası aktif edilmeli!
       })
 
+      let img = await loadImage("./assets/icon/favicon.png");
+      let src = cv.imread(img);
+      let dst = new cv.Mat();
+      cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+      cv.imshow('output', dst);
+      src.delete();
+      dst.delete();
+
       let savedObject = null;
       if (this.platform.is('hybrid')) {
         savedObject = {
@@ -110,8 +126,6 @@ export class HomePage {
           webviewPath: ""
         };
       }
-
-      
   
       this.photos.unshift(savedObject);
   
