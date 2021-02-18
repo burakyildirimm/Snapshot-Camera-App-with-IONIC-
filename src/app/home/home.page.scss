@@ -20,7 +20,14 @@ ion-content {
   z-index: 1;
   position: absolute;
   left: 25%;
-  top: 25%;
+  top: 10%;
+  width: 50%;
+}
+
+.canvas-overlay {
+  position: absolute;
+  left: 25%;
+  top: 50%;
   width: 50%;
 }
 

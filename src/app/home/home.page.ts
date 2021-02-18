@@ -76,6 +76,12 @@ export class HomePage {
     const result = await CameraPreview.capture(cameraPreviewPictureOptions);
     this.image = `data:image/jpeg;base64,${result.value}`;
     this.savePicture(result, this.image);
+
+    const img_element = document.getElementById('image');
+    const original_image = cv.imread(img_element);
+    cv.cvtColor(original_image,original_image,cv.COLOR_RGB2GRAY);
+    cv.imshow('output', original_image);
+    original_image.delete();
   }
 
   async savePicture(cameraPhoto: CameraPhoto, base64: string) {
