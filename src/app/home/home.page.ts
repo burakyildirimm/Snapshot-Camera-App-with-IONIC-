@@ -5,6 +5,8 @@ import { CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-co
 import { Platform } from '@ionic/angular';
 import '@capacitor-community/camera-preview';
 import { loadImage } from 'canvas';
+import { Screenshot } from '@ionic-native/screenshot/ngx';
+
 
 declare var cv: any;
 
@@ -21,7 +23,7 @@ export class HomePage {
   private platform: Platform;
   private capture_timer = null;
 
-  constructor(platform: Platform) {
+  constructor(platform: Platform, private screenshot: Screenshot) {
     this.platform = platform;
     // console.log(cv.getBuildInformation());
   }
@@ -67,13 +69,20 @@ export class HomePage {
   }
 
   async captureCamera() {
-    const cameraPreviewPictureOptions: CameraPreviewPictureOptions = {
-      quality: 100
-    };
+    this.screenshot.URI(80).then((res) => {
+      console.log(res);
+    }, (err) => {
+      console.log(err);
+    });
     
-    const result = await CameraPreview.capture(cameraPreviewPictureOptions);
-    this.image = `data:image/jpeg;base64,${result.value}`;
-    this.savePicture(result, this.image);
+
+    // const cameraPreviewPictureOptions: CameraPreviewPictureOptions = {
+    //   quality: 100
+    // };
+    
+    // const result = await CameraPreview.capture(cameraPreviewPictureOptions);
+    // this.image = `data:image/jpeg;base64,${result.value}`;
+    // this.savePicture(result, this.image);
 
     // const img_element = document.getElementById('image');
     // const original_image = cv.imread(img_element);
